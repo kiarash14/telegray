@@ -1,0 +1,129 @@
+-- data saved to data/moderation.json
+do
+
+local administrators_only = 'For administrator only!'
+local moderators_only = 'For moderators only!'
+
+local function create_group(msg)
+  if not is_admin(msg) then return administrators_only end
+  local group_creator = msg.from.print_name
+  create_group_chat (group_creator, group_name, ok_cb, false)
+ return 'Group '..string.gsub(group_name, '_', ' ')..' has been created.'
+end
+
+local function addgroup(msg)
+  if not is_admin(msg) then return administrators_only end
+  local data = load_data(_config.moderation.data)
+  if data[tostring(msg.to.id)] then
+    return 'Group is already added.'
+  end
+    -- create data array in moderation.json
+  data[tostring(msg.to.id)] = {
+    moderators ={},
+    settings = {
+      set_name = string.gsub(msg.to.print_name, '_', ' '),
+      lock_bots = 'no',
+      lock_name = 'no',
+      lock_photo = 'no',
+      lock_member = 'no',
+      anti_flood = 'no',
+      welcome = 'no',
+      sticker = 'ok'
+      }
+    }
+  save_data(_config.moderation.data, data)
+
+  return 'Group has been added.'
+end
+
+local function remgroup(msg)
+  if not is_admin(msg) then return administrators_only end
+  local data = load_data(_config.moderation.data)
+  local receiver = get_receiver(msg)
+  if not data[tostring(msg.to.id)] then
+    return 'Group is not added.'
+  end
+
+  data[tostring(msg.to.id)] = nil
+  save_data(_config.moderation.data, data)
+
+  return 'Group has been removed'
+end
+
+local function export_chat_link_callback(extra, success, result)
+  local msg = extra.msg
+  local group_name = msg.to.title
+  local data = extra.data
+  local receiver = get_receiver(msg)
+  if success == 0 then
+    return send_large_msg(receiver, 'Cannot generate invite link for this group.\nMake sure you are an admin or a sudoer.')
+  end
+  data[tostring(msg.to.id)]['link'] = result
+  save_data(_config.moderation.data, data)
+  return send_large_msg(receiver,'Newest generated invite link for '..group_name..' is:\n'..result)
+end
+
+local function set_description(msg, data)
+  if not is_mod(msg) then return moderators_only end
+  local data_cat = 'description'
+ data[tostring(msg.to.id)][data_cat] = deskripsi
+ save_data(_config.moderation.data, data)
+
+ return 'Set group description to:\n'..deskripsi
+end
+
+local function get_description(msg, data)
+  local data_cat = 'description'
+  if not data[tostring(msg.to.id)][data_cat] then
+    return 'No description available.'
+ end
+  local about = data[tostring(msg.to.id)][data_cat]
+  return string.gsub(msg.to.print_name, "_", " ")..':\n\n'..about
+end
+
+local function set_rules(msg, data)
+  if not is_mod(msg) then return moderators_only end
+  local data_cat = 'rules'
+ data[tostring(msg.to.id)][data_cat] = rules
+ save_data(_config.moderation.data, data)
+
+ return 'Set group rules to:\n'..rules
+end
+
+local function get_rules(msg, data)
+  local data_cat = 'rules'
+  if not data[tostring(msg.to.id)][data_cat] then
+    return 'No rules available.'
+ end
+  local rules = data[tostring(msg.to.id)][data_cat]
+  local rules = string.gsub(msg.to.print_name, '_', ' ')..' rules:\n\n'..rules
+  return rules
+end
+
+-- dis/allow APIs bots to enter group. Spam prevention.
+local function allow_api_bots(msg, data)
+  if not is_mod(msg) then return moderators_only end
+  local group_bot_lock = data[tostring(msg.to.id)]['settings']['lock_bots']
+ if group_bot_lock == 'no' then
+    return 'Bots are allowed to enter group.'
+ else
+    data[tostring(msg.to.id)]['settings']['lock_bots'] = 'no'
+    save_data(_config.moderation.data, data)
+    return 'Group is open for bots.'
+ end
+end
+
+local function disallow_api_bots(msg, data)
+  if not is_mod(msg) then return moderators_only end
+  local group_bot_lock = data[tostring(msg.to.id)]['settings']['lock_bots']
+ if group_bot_lock == 'yes' then
+    return 'Group is already locked from bots.'
+ else
+    data[tostring(msg.to.id)]['settings']['lock_bots'] = 'yes'
+    save_data(_config.moderation.data, data)
+    return 'Group is locked from bots.'
+ end
+end
+
+-- lock/unlock group name. bot automatically change group name when locked
+local

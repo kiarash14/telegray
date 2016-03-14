@@ -323,9 +323,9 @@ return {
     "^[!/]([Bb]an)$",
     "^[!/]([Uu]nban)$",
     "^[!/]([Ii]d)$",
+    
     "^!!tgservice (.+)$"
   },
   run = run,
   pre_process = pre_process
 }
-

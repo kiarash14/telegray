@@ -14,6 +14,9 @@ local function pairsByKeys (t, f)
     end
 
 local function chat_list(msg)
+	if not is_sudo(msg) then
+		return " Only Sudo can Request chat list "
+	end
     local data = load_data(_config.moderation.data)
         local groups = 'groups'
         if not data[tostring(groups)] then
@@ -60,6 +63,9 @@ local function run(msg, matches)
          	return "Chat not found."
         end
      if matches[1] == 'chats'then
+     	if not is_sudo(msg) then
+		return " Only Sudo can Request chat list "
+	end
        if is_admin(msg) and msg.to.type == 'chat' then
          return chat_list(msg)
        elseif msg.to.type ~= 'chat' then
@@ -67,6 +73,9 @@ local function run(msg, matches)
        end      
      end
      if matches[1] == 'chatlist'then
+     	if not is_sudo(msg) then
+		return " Only Sudo can Request chat list "
+	end
        if is_admin(msg) and msg.to.type == 'chat' then
          send_document("chat#id"..msg.from.id, "./groups/lists/listed_groups.txt", ok_cb, false)
        elseif msg.to.type ~= 'chat' then

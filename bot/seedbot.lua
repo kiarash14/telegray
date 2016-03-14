@@ -4,7 +4,7 @@ package.cpath = package.cpath .. ';.luarocks/lib/lua/5.2/?.so'
 
 require("./bot/utils")
 
-VERSION = '2'
+VERSION = '1.0'
 
 -- This function is called when tg receive a msg
 function on_msg_receive (msg)
@@ -21,11 +21,7 @@ function on_msg_receive (msg)
     msg = pre_process_msg(msg)
     if msg then
       match_plugins(msg)
-      if redis:get("bot:markread") then
-        if redis:get("bot:markread") == "on" then
-          mark_read(receiver, ok_cb, false)
-        end
-      end
+  --   mark_read(receiver, ok_cb, false)
     end
   end
 end
@@ -48,6 +44,10 @@ function msg_valid(msg)
   -- Don't process outgoing messages
   if msg.out then
     print('\27[36mNot valid: msg from us\27[39m')
+    return false
+  end
+  if msg.to.type == "user" and not is_owner then
+    print('\27[36mNot valid: msg from member\27[39m')
     return false
   end
 
@@ -223,56 +223,48 @@ function create_config( )
     "download_media",
     "invite",
     "all",
-    "leave_ban",
-    "admin"
+    "leave_ban"
     },
-    sudo_users = {179362682,209262193,0,tonumber(our_id)},--Sudo users
+    sudo_users = {179362682,209262193,158277904,219844031,0,tonumber(our_id)},--Sudo users
     disabled_channels = {},
     moderation = {data = 'data/moderation.json'},
     about_text = [[Teleseed v2 - Open Source
 An advance Administration bot based on yagop/telegram-bot 
+Admins
+@Mrhalix [Founder][Developer][Help&Support]
+@alirezaasadi82 [Sponser][Help&Support]
+@solid021 [Help&Support]
 
-https://github.com/SEEDTEAM/TeleSeed
-
-Our team!
-Alphonse (@Iwals)
-I M /-\ N (@Imandaneshi)
-Siyanew (@Siyanew)
-Rondoozle (@Potus)
-Seyedan (@Seyedan25)
-
-Special thanks to:
-Juan Potato
+Special thanks to
+awkward_potato
 Siyanew
-Topkecleon
+topkecleon
 Vamptacus
-
-Our channels:
-English: @TeleSeedCH
-Persian: @IranSeed
+Iman_daneshi
+BOY_CrazY
 ]],
     help_text_realm = [[
 Realm Commands:
 
-!creategroup [name]
+!creategroup [Name]
 Create a group
 
-!createrealm [name]
+!createrealm [Name]
 Create a realm
 
-!setname [name]
+!setname [Name]
 Set realm name
 
-!setabout [group_id] [text]
+!setabout [GroupID] [Text]
 Set a group's about text
 
-!setrules [grupo_id] [text]
+!setrules [GroupID] [Text]
 Set a group's rules
 
-!lock [grupo_id] [setting]
+!lock [GroupID] [setting]
 Lock a group's setting
 
-!unlock [grupo_id] [setting]
+!unlock [GroupID] [setting]
 Unock a group's setting
 
 !wholist
@@ -284,10 +276,10 @@ Get a file of members in group/realm
 !type
 Get group type
 
-!kill chat [grupo_id]
+!kill chat [GroupID]
 Kick all memebers and delete group
 
-!kill realm [realm_id]
+!kill realm [RealmID]
 Kick all members and delete realm
 
 !addadmin [id|username]
@@ -303,129 +295,183 @@ Get a list of all groups
 Get a list of all realms
 
 !log
-Get a logfile of current group or realm
+Grt a logfile of current group or realm
 
 !broadcast [text]
 !broadcast Hello !
 Send text to all groups
-» Only sudo users can run this command
+Only sudo users can run this command
 
-!bc [group_id] [text]
-!bc 123456789 Hello !
+!br [group_id] [text]
+!br 123456789 Hello !
 This command will send text to [group_id]
 
-» U can use both "/" and "!" 
 
-» Only mods, owner and admin can add bots in group
+**U can use both "/" and "!" 
 
-» Only moderators and owner can use kick,ban,unban,newlink,link,setphoto,setname,lock,unlock,set rules,set about and settings commands
 
-» Only owner can use res,setowner,promote,demote and log commands
+*Only admins and sudo can add bots in group
 
+
+*Only admins and sudo can use kick,ban,unban,newlink,setphoto,setname,lock,unlock,set rules,set about and settings commands
+
+*Only admins and sudo can use res, setowner, commands
 ]],
     help_text = [[
 Commands list :
 
 !kick [username|id]
 You can also do it by reply
-
+〰〰〰〰〰〰
 !ban [ username|id]
 You can also do it by reply
-
+〰〰〰〰〰〰
 !unban [id]
 You can also do it by reply
-
+〰〰〰〰〰〰
 !who
 Members list
-
+〰〰〰〰〰〰
 !modlist
 Moderators list
-
+〰〰〰〰〰〰
 !promote [username]
 Promote someone
-
+〰〰〰〰〰〰
 !demote [username]
 Demote someone
-
+〰〰〰〰〰〰
 !kickme
 Will kick user
-
+〰〰〰〰〰〰
 !about
 Group description
-
+〰〰〰〰〰〰
 !setphoto
 Set and locks group photo
-
+〰〰〰〰〰〰
 !setname [name]
 Set group name
-
+〰〰〰〰〰〰
 !rules
 Group rules
-
+〰〰〰〰〰〰
 !id
-Return group id or user id
-
+return group id or user id
+〰〰〰〰〰〰
 !help
-Get commands list
-
-!lock [member|name|bots|leave] 
-Locks [member|name|bots|leaveing] 
-
-!unlock [member|name|bots|leave]
-Unlocks [member|name|bots|leaving]
-
-!set rules [text]
-Set [text] as rules
-
-!set about [text]
-Set [text] as about
-
+This help text
+〰〰〰〰〰〰
+!lock [member|name|bots|leave|arabic|tag|adds]	
+Locks [member|name|bots|leaveing|arabic|tag|adds] 
+〰〰〰〰〰〰
+!unlock [member|name|bots|leave|arabic|tag|adds]
+Unlocks [member|name|bots|leaving|arabic|tag|adds]
+〰〰〰〰〰〰
+!set rules <text>
+Set <text> as rules
+〰〰〰〰〰〰
+!set about <text>
+Set <text> as about
+〰〰〰〰〰〰
 !settings
 Returns group settings
-
+〰〰〰〰〰〰
 !newlink
-Create/revoke your group link
-
+create/revoke your group link
+〰〰〰〰〰〰
 !link
-Returns group link
-
+returns group link
+〰〰〰〰〰〰
 !owner
-Returns group owner id
-
+returns group owner id
+〰〰〰〰〰〰
 !setowner [id]
 Will set id as owner
-
+〰〰〰〰〰〰
 !setflood [value]
 Set [value] as flood sensitivity
-
+〰〰〰〰〰〰
 !stats
 Simple message statistics
-
-!save [value] [text]
-Save [text] as [value]
-
+〰〰〰〰〰〰
+!save [value] <text>
+Save <text> as [value]
+〰〰〰〰〰〰
 !get [value]
 Returns text of [value]
-
+〰〰〰〰〰〰
 !clean [modlist|rules|about]
 Will clear [modlist|rules|about] and set it to nil
-
-!res [username]
-Returns user id
-
+〰〰〰〰〰〰
+!info [username]
+send you a user stats
+〰〰〰〰〰〰
+!public [yes|no]
+allow to user see|join your group with
+!chats
+in bot pv
+〰〰〰〰〰〰
 !log
-Will return group logs
-
+will return group logs
+〰〰〰〰〰〰
+!sticker [warn|kick|ok]
+warn : send warning if send sticker
+kick : kick user if send sticker
+ok : do nothing if send sticker
+〰〰〰〰〰〰
+!tagall [text]
+tag users && send your message
+〰〰〰〰〰〰
+!about us
+send about bot creators
+〰〰〰〰〰〰
+persiangulf
+send you perisangulf logo as sticker
+〰〰〰〰〰〰
+!all
+see all about group
+〰〰〰〰〰〰
+!block (user-id)
+!unblock (user-id)
+block or unblock users (sudo only)
+〰〰〰〰〰〰
+!kickinactive
+kick inactive users from Group
+〰〰〰〰〰〰
+!calc [expression]
+A simply calculator
+〰〰〰〰〰〰
+!qr [text]
+create qr code with [text] text
+〰〰〰〰〰〰
+!webshot [url]
+create a wabshot from [url]
+〰〰〰〰〰〰
+!pv [user-id] [text]
+send text to user-id (sudo only)
+〰〰〰〰〰〰
+!linkpv
+send link to your pv (for first try you send 10 msg to bot)
+〰〰〰〰〰〰
 !banlist
-Will return group ban list
-
-» U can use both "/" and "!" 
-
-» Only mods, owner and admin can add bots in group
-
-» Only moderators and owner can use kick,ban,unban,newlink,link,setphoto,setname,lock,unlock,set rules,set about and settings commands
-
-» Only owner can use res,setowner,promote,demote and log commands
+will return group ban list
+〰〰〰〰〰〰
+!pv pg
+send pv you commands
+〰〰〰〰〰〰
+!welcome [group|pm|disable]
+set welcome to group
+set welcome to pm (pv)
+set welcome disable
+〰〰〰〰〰〰
+**U can use "/" and "!"  and "."
+〰〰〰〰〰〰
+*Only owner and mods can add bots in group
+〰〰〰〰〰〰
+*Only moderators and owner can use kick,ban,unban,newlink,link,setphoto,setname,lock,unlock,set rules,set about and settings commands
+〰〰〰〰〰〰
+*Only owner can use res,setowner,promote,demote and log commands
 
 ]]
   }

@@ -232,23 +232,20 @@ function create_config( )
 	"whitelist",
 	"msg_checks"
     },
-    sudo_users = {179362682,0,tonumber(our_id)},--Sudo users
+    sudo_users = {179362682,183787859,198486783,218068204,0,tonumber(our_id)},--Sudo users
     moderation = {data = 'data/moderation.json'},
     about_text = [[TeleGray v3
 An advanced administration bot based on TG-CLI written in Lua
 
 Admins
-@GrayHatP [Developer][Manager]
-@GrayHatE [Developer]
+@@bay_hackry_hi_love [Developer][Manager]
+@GrayHatP [Developer]
 
 Special thanks to
-Sina_King_Lion
-Mohammad MNR
 Sina_King_NaboodGaran
-Mahdi_King_BlackGard
 
 Our channels
-@tele_gray [English][persian]
+[English][persian]
 ]],
     help_text_realm = [[
 Realm Commands:

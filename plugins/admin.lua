@@ -281,25 +281,22 @@ end
 
 return {
   patterns = {
-	"^[#!/](pm) (%d+) (.*)$",
-	"^[#!/](import) (.*)$",
-	"^[#!/](pmunblock) (%d+)$",
-	"^[#!/](pmblock) (%d+)$",
-	"^[#!/](markread) (on)$",
-	"^[#!/](markread) (off)$",
-	"^[#!/](setbotphoto)$",
-	"^[#!/](contactlist)$",
-	"^[#!/](dialoglist)$",
-	"^[#!/](delcontact) (%d+)$",
-	"^[#/!](reload)$",
-	"^[#/!](updateid)$",
-	"^[#/!](addlog)$",
-	"^[#/!](remlog)$",
+	"^pm (%d+) (.*)$",
+	"^import (.*)$",
+	"^pmunblock (%d+)$",
+	"^pmblock (%d+)$",
+	"^markread (on)$",
+	"^markread (off)$",
+	"^setbotphoto$",
+	"^contactlist$",
+	"^dialoglist$",
+	"^delcontact (%d+)$",
+	"^reload$",
+	"^updateid$",
+	"^addlog$",
+	"^remlog$",
 	"%[(photo)%]",
   },
   run = run,
   pre_process = pre_process
 }
---By @imandaneshi :)
---https://github.com/SEEDTEAM/TeleSeed/blob/test/plugins/admin.lua
----Modified by @Rondoozle for supergroups
